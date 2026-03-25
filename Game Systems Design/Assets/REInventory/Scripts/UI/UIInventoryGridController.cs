@@ -1,3 +1,5 @@
+using MMStdLib.Utils;
+using System;
 using UnityEngine;
 
 namespace REInventory.UI
@@ -35,6 +37,16 @@ namespace REInventory.UI
             {
                 itemView.OnPointerClicked += OnItemViewPointerClicked;
             }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<IInventoryChangedEvent>(OnInventoryChanged); 
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<IInventoryChangedEvent>(OnInventoryChanged);
         }
 
         public void BindInventory(IInventoryCore inventory)
@@ -81,6 +93,12 @@ namespace REInventory.UI
         {
             _inventoryItemOptionsView.RefreshOptions(itemView.BindedItem.Options);
             _inventoryItemOptionsView.OpenOptions();
+        }
+
+        private void OnInventoryChanged(IInventoryChangedEvent eventData)
+        {
+            if (eventData.RefInventory != _subjectInventory) return;
+            DrawItems();
         }
     }
 }

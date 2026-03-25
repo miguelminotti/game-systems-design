@@ -11,9 +11,9 @@ namespace REInventory
         public int YPosition { get; private set; }
         public IStorableOption[] Options => new IStorableOption[]
         {
-            new StorableOptionUse(Use),
-            new StorableOptionDrop(Drop),
-            new StorableOptionMove(Move),
+            new StorableOptionBase(Use, "Use"),
+            new StorableOptionBase(Drop, "Drop"),
+            new StorableOptionBase(Move, "Move"),
         };
         public IInventoryCore BindedInventory => _bindedInventory;
 
@@ -40,12 +40,13 @@ namespace REInventory
 
         private void Drop()
         {
+            Debug.Log($"Dropping item: {BaseItem}");
             _bindedInventory?.RemoveItem(this);
         }
 
         private void Move()
         {
-
+            Debug.Log($"Moving item: {BaseItem}");
         }
 
         public void BindToInventory(IInventoryCore inventory)

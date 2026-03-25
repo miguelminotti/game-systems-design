@@ -34,7 +34,7 @@ namespace REInventory.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _event.NewText = $"Item: {_bindedItem.BaseItem.Name}";
+            _event.NewText = $"{_bindedItem.BaseItem.Name}\n\n{_bindedItem.BaseItem.Description}";
             GameEventBus.Publish((IInventoryAidTextChangeEvent)_event);
         }
 

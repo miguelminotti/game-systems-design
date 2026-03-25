@@ -6,5 +6,6 @@ namespace REInventory
     {
         string OptionLabel { get; }
         void Submit();
+        void Setup(Action submitAction, string label);
     }
 }
