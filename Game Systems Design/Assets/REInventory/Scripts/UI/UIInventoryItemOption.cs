@@ -12,9 +12,12 @@ namespace REInventory.UI
 
         private IStorableOption _bindedStorableOption;
 
+        public event Action<UIInventoryItemOption> OnOptionClicked;
+
         public void OnPointerClick(PointerEventData eventData)
         {
             _bindedStorableOption.Submit();
+            OnOptionClicked?.Invoke(this);
         }
 
         public void Refresh(IStorableOption storableOption)

@@ -8,16 +8,13 @@ namespace REInventory.UI
         [SerializeField] private InventorySystem _inventorySystem;
         [SerializeField] private UIInventoryGridController _gridController;
 
-        private void OnEnable()
-        {
-            _gridController.BindInventory(_inventorySystem.InventoryCore); // TODO: change it for service locator later
-            _gridController.DrawItems();
-        }
-
         [ContextMenu("Open Inventory")]
         public void OpenInventory()
         {
             gameObject.SetActive(true);
+            _gridController.Initialize();
+            _gridController.BindInventory(_inventorySystem.InventoryCore); // TODO: change it for service locator later
+            _gridController.DrawItems();
         }
 
         [ContextMenu("Close Inventory")]

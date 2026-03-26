@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3151602766576108065}
   - component: {fileID: 191467072485592393}
+  - component: {fileID: 4759550520858914607}
   m_Layer: 5
   m_Name: ItemView
   m_TagString: Untagged
@@ -127,7 +128,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::REInventory.UI.UIInventoryItemView
   _rectTransform: {fileID: 3151602766576108065}
   _image: {fileID: 5561413629191424571}
+  _canvasGroup: {fileID: 4759550520858914607}
   _scaleMultiplier: 105
+--- !u!225 &4759550520858914607
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007577423134487972}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1492278384421906096
 GameObject:
   m_ObjectHideFlags: 0

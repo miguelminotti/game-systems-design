@@ -1,9 +1,13 @@
+using REInventory.UI;
 using UnityEngine;
 
 namespace REInventory
 {
     public class InventorySystem : MonoBehaviour
     {
+        [Header("Injections")]
+        [SerializeField] private UIInventoryCore uIInventoryCore;
+
         [Header("Settings")]
         [SerializeField] private int gridWidth = 5;
         [SerializeField] private int gridHeight = 5;
@@ -16,6 +20,7 @@ namespace REInventory
         {
             _inventoryCore = new InventoryCore();
             _inventoryCore.Initialize(gridWidth, gridHeight);
+            uIInventoryCore.OpenInventory();
         }
     }
 }

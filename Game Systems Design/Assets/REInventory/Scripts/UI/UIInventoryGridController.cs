@@ -13,16 +13,19 @@ namespace REInventory.UI
         }
 
         [Header("Injections")]
+        [SerializeField] private Canvas _parentCanvas;
         [SerializeField] private UIInventoryItemOptionsView _inventoryItemOptionsView;
         [SerializeField] private Transform _itemViewsParent;
         [SerializeField] private Transform _gridSlotsParent;
+        [SerializeField] private UIInventoryItemView _tempDraggingItemView;
 
         private GridInteractionState _currentInteractionState = GridInteractionState.Idle;
-        private IInventoryCore _subjectInventory;
+        private IInventoryCore _bindedInventory;
         private UIInventoryItemView[] _itemViews;
         private UIInventoryGridSlotView[] _gridSlots;
+        private UIInventoryItemView _currentDraggingItemView;
 
-        private void Awake()
+        public void Initialize()
         {
             _itemViews = _itemViewsParent.GetComponentsInChildren<UIInventoryItemView>();
             _gridSlots = _gridSlotsParent.GetComponentsInChildren<UIInventoryGridSlotView>();
@@ -36,31 +39,42 @@ namespace REInventory.UI
             foreach (var itemView in _itemViews)
             {
                 itemView.OnPointerClicked += OnItemViewPointerClicked;
+                itemView.SetBindedCanvas(_parentCanvas);
             }
+
+            _tempDraggingItemView.SetBindedCanvas(_parentCanvas);
         }
 
         private void OnEnable()
         {
-            GameEventBus.Subscribe<IInventoryChangedEvent>(OnInventoryChanged); 
+            GameEventBus.Subscribe<IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Subscribe<IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
         private void OnDisable()
         {
-            GameEventBus.Unsubscribe<IInventoryChangedEvent>(OnInventoryChanged);
+            GameEventBus.Unsubscribe<IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Unsubscribe<IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
         public void BindInventory(IInventoryCore inventory)
         {
-            _subjectInventory = inventory;
+            _bindedInventory = inventory;
+            // Setup grid slots with inventory dimensions
+            for (int i = 0; i < _gridSlots.Length; i++)
+            {
+                UIInventoryGridSlotView gridSlot = _gridSlots[i];
+                gridSlot.Setup(i % inventory.Width, i / inventory.Width);
+            }
         }
 
         public void DrawItems()
         {
             for (int i = 0; i < _itemViews.Length; i++)
             {
-                if (i < _subjectInventory.Items.Count)
+                if (i < _bindedInventory.Items.Count)
                 {
-                    _itemViews[i].SetBindedItem(_subjectInventory.Items[i]);
+                    _itemViews[i].SetBindedItem(_bindedInventory.Items[i]);
                     _itemViews[i].gameObject.SetActive(true);
                 }
                 else
@@ -79,7 +93,25 @@ namespace REInventory.UI
         {
             if (_currentInteractionState != GridInteractionState.ItemDragging) return;
 
-            // Confirm moving the item to the position
+            if (TryPlaceItemOnGridSlot(gridSlotView))
+            {
+                SetState(GridInteractionState.Idle);
+                _currentDraggingItemView.EndDragging();
+                _currentDraggingItemView = null;
+            }
+        }
+
+        private bool TryPlaceItemOnGridSlot(UIInventoryGridSlotView gridSlotView)
+        {
+            if (gridSlotView == null || _bindedInventory == null) return false;
+
+            if (_bindedInventory.AddItemAtPosition(_currentDraggingItemView.BindedItem, gridSlotView.XPosition, gridSlotView.YPosition)) {
+                Debug.Log($"Item placed at: {gridSlotView.XPosition},{gridSlotView.YPosition}");
+                return true;
+            }
+
+            Debug.Log("Cant place item");
+            return false;
         }
 
         private void OnGridSlotPointerEntered(UIInventoryGridSlotView gridSlotView)
@@ -95,10 +127,19 @@ namespace REInventory.UI
             _inventoryItemOptionsView.OpenOptions();
         }
 
-        private void OnInventoryChanged(IInventoryChangedEvent eventData)
+        private void OnInventoryChangedHandler(IInventoryChangedEvent eventData)
         {
-            if (eventData.RefInventory != _subjectInventory) return;
+            if (eventData.RefInventory != _bindedInventory) return;
             DrawItems();
+        }
+
+        private void OnMoveInventoryItemHandler(IMoveInventoryItemEvent eventData)
+        {
+            if (eventData.RefInventory != _bindedInventory || eventData.Item == null) return;
+
+            SetState(GridInteractionState.ItemDragging);
+            _tempDraggingItemView.SetBindedItem(eventData.Item);
+            _tempDraggingItemView.StartDragging();
         }
     }
 }

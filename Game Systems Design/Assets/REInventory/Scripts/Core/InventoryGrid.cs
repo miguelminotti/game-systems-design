@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace REInventory
@@ -28,6 +29,7 @@ namespace REInventory
         {
             Width = width;
             Height = height;
+            MaxCapacity = width * height;
 
             _gridSlots = new InventoryGridSlot[width, height];
             for (int x = 0; x < width; x++)

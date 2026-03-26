@@ -7,6 +7,19 @@ namespace REInventory.UI
         [Header("Injections")]
         [SerializeField] private UIInventoryItemOption[] _options;
 
+        private void Awake()
+        {
+            foreach (UIInventoryItemOption option in _options)
+            {
+                option.OnOptionClicked += OnOptionClicked;
+            }
+        }
+
+        private void OnOptionClicked(UIInventoryItemOption option)
+        {
+            CloseOptions();
+        }
+
         public void OpenOptions()
         {
             gameObject.SetActive(true);

@@ -7,6 +7,8 @@ namespace REInventory
     {
         IReadOnlyList<IRuntimeStorable> Items { get; }
         int MaxCapacity { get; }
+        int Width { get; }
+        int Height { get; }
         void Initialize(int width, int height);
         bool AddItem(IRuntimeStorable item);
         bool AddItemAtPosition(IRuntimeStorable item, int x, int y);
@@ -20,10 +22,15 @@ namespace REInventory
         bool IsAdded { get; }
     }
 
+    /// <summary>
+    /// Core class for inventory management. Handles item storage, placement, and removal, as well as publishing events when the inventory changes.
+    /// </summary>
     public class InventoryCore : IInventoryCore
     {
         public IReadOnlyList<IRuntimeStorable> Items => _items.AsReadOnly();
         public int MaxCapacity => _grid.MaxCapacity;
+        public int Width => _grid.Width;
+        public int Height => _grid.Height;
 
         private readonly List<IRuntimeStorable> _items = new List<IRuntimeStorable>();
         private IInventoryGrid _grid;
