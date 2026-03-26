@@ -102,7 +102,6 @@ namespace REInventory
             GameEventBus.Publish<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(this);
         }
 
-
         private class InventoryChangedEvent : IInventoryCore.IInventoryChangedEvent
         {
             public IInventoryCore RefInventory { get; private set; }

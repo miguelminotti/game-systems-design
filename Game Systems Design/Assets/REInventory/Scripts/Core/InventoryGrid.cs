@@ -1,6 +1,4 @@
 using System;
-using UnityEditor;
-using UnityEngine;
 
 namespace REInventory
 {
@@ -54,7 +52,6 @@ namespace REInventory
             int itemHeight = item.BaseItem.Height;
             if (!IsPlaceableAt(x, y, itemWidth, itemHeight))
             {
-                Debug.Log("Item cannot be placed at the specified position due to size constraints.");
                 return false;
             }
 
@@ -86,7 +83,6 @@ namespace REInventory
                 return true;
             }
 
-            Debug.Log("No available space found for the item.");
             return false; // No available space found for the item
         }
 
@@ -107,17 +103,6 @@ namespace REInventory
             return itemFound;
         }
 
-        private void FillSlotsForItem(IRuntimeStorable item, int x, int y)
-        {
-            for (int i = 0; i < item.BaseItem.Width; i++)
-            {
-                for (int j = 0; j < item.BaseItem.Height; j++)
-                {
-                    GetSlot(x + i, y + j).StoreItem(item);
-                }
-            }
-        }
-
         public bool IsPlaceableAt(int x, int y, int itemWidth, int itemHeight)
         {
             // Change this to check if there's enough space for the item and if the slots are empty
@@ -134,6 +119,17 @@ namespace REInventory
                 }
             }
             return true; // Placeable if all slots are within bounds and unoccupied
+        }
+
+        private void FillSlotsForItem(IRuntimeStorable item, int x, int y)
+        {
+            for (int i = 0; i < item.BaseItem.Width; i++)
+            {
+                for (int j = 0; j < item.BaseItem.Height; j++)
+                {
+                    GetSlot(x + i, y + j).StoreItem(item);
+                }
+            }
         }
     }
 }
