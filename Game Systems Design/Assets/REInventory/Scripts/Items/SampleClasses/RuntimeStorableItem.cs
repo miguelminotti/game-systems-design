@@ -4,12 +4,6 @@ using UnityEngine;
 
 namespace REInventory
 {
-    public interface IMoveInventoryItemEvent
-    {
-        IInventoryCore RefInventory { get; }
-        IRuntimeStorable Item { get; }
-    }
-
     // Testing class
     public class RuntimeStorableItem : IRuntimeStorable
     {
@@ -55,7 +49,7 @@ namespace REInventory
         {
             Debug.Log($"Moving item: {BaseItem}");
             _bindedInventory?.RemoveItem(this);
-            IMoveInventoryItemEvent moveEvent = new MoveInventoryItemEvent(BindedInventory, this);
+            IRuntimeStorable.IMoveInventoryItemEvent moveEvent = new MoveInventoryItemEvent(BindedInventory, this);
             GameEventBus.Publish(moveEvent);
         }
 
@@ -64,7 +58,7 @@ namespace REInventory
             _bindedInventory = inventory;
         }
 
-        private class MoveInventoryItemEvent : IMoveInventoryItemEvent
+        private class MoveInventoryItemEvent : IRuntimeStorable.IMoveInventoryItemEvent
         {
             public IInventoryCore RefInventory { get; }
             public IRuntimeStorable Item { get; }

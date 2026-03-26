@@ -1,3 +1,4 @@
+using MMStdLib.Utils;
 using UnityEngine;
 
 namespace REInventory.UI
@@ -5,7 +6,6 @@ namespace REInventory.UI
     public class UIInventoryCore : MonoBehaviour
     {
         [Header("Injections")]
-        [SerializeField] private InventorySystem _inventorySystem;
         [SerializeField] private UIInventoryGridController _gridController;
 
         [ContextMenu("Open Inventory")]
@@ -13,7 +13,7 @@ namespace REInventory.UI
         {
             gameObject.SetActive(true);
             _gridController.Initialize();
-            _gridController.BindInventory(_inventorySystem.InventoryCore); // TODO: change it for service locator later
+            _gridController.BindInventory(ServiceLocator.GetService<IInventoryCore>());
             _gridController.DrawItems();
         }
 

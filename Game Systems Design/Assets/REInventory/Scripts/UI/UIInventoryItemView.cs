@@ -93,7 +93,7 @@ namespace REInventory.UI
             out Vector2 localPoint
             );
 
-            _rectTransform.localPosition = localPoint + new Vector2(670.3143f / 2f, -260.194f / 2f);
+            _rectTransform.localPosition = localPoint;
         }
     }
 }

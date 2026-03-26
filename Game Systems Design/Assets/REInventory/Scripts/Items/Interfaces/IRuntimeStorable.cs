@@ -14,5 +14,11 @@ namespace REInventory
 
         void SetPosition(int x, int y);
         void BindToInventory(IInventoryCore inventory);
+
+        interface IMoveInventoryItemEvent
+        {
+            IInventoryCore RefInventory { get; }
+            IRuntimeStorable Item { get; }
+        }
     }
 }

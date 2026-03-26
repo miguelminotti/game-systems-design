@@ -13,13 +13,20 @@ namespace REInventory
         bool AddItem(IRuntimeStorable item);
         bool AddItemAtPosition(IRuntimeStorable item, int x, int y);
         bool RemoveItem(IRuntimeStorable item);
-    }
+        void Clear();
 
-    public interface IInventoryChangedEvent
-    {
-        IInventoryCore RefInventory { get; }
-        IRuntimeStorable Item { get; }
-        bool IsAdded { get; }
+        interface IInventoryChangedEvent
+        {
+            IInventoryCore RefInventory { get; }
+            IRuntimeStorable Item { get; }
+            bool IsAdded { get; }
+            void Setup(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded);
+        }
+
+        interface IInventoryClearedEvent
+        {
+            IInventoryCore RefInventory { get; }
+        }
     }
 
     /// <summary>
@@ -34,10 +41,12 @@ namespace REInventory
 
         private readonly List<IRuntimeStorable> _items = new List<IRuntimeStorable>();
         private IInventoryGrid _grid;
+        private IInventoryCore.IInventoryChangedEvent _inventoryChangedEvent;
 
         public void Initialize(int width, int height)
         {
             _grid = new InventoryGrid(width, height);
+            _inventoryChangedEvent = new InventoryChangedEvent();
         }
 
         public bool AddItem(IRuntimeStorable item)
@@ -46,8 +55,8 @@ namespace REInventory
             {
                 item.BindToInventory(this);
                 _items.Add(item);
-                IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, true);
-                GameEventBus.Publish(inventoryChangedEvent);
+                _inventoryChangedEvent.Setup(this, item, true);
+                GameEventBus.Publish(_inventoryChangedEvent);
                 return true;
             }
             return false;
@@ -59,8 +68,8 @@ namespace REInventory
             {
                 item.BindToInventory(this);
                 _items.Add(item);
-                IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, true);
-                GameEventBus.Publish(inventoryChangedEvent);
+                _inventoryChangedEvent.Setup(this, item, true);
+                GameEventBus.Publish(_inventoryChangedEvent);
                 return true;
             }
             return false;
@@ -72,8 +81,8 @@ namespace REInventory
             {
                 if (_grid.RemoveItem(item))
                 {
-                    IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, false);
-                    GameEventBus.Publish(inventoryChangedEvent);
+                    _inventoryChangedEvent.Setup(this, item, false);
+                    GameEventBus.Publish(_inventoryChangedEvent);
                     return true;
                 }
             }
@@ -81,12 +90,26 @@ namespace REInventory
             return false;
         }
 
-        private class InventoryChangedEvent : IInventoryChangedEvent
+        public void Clear()
         {
-            public IInventoryCore RefInventory { get; }
-            public IRuntimeStorable Item { get; }
-            public bool IsAdded { get; }
-            public InventoryChangedEvent(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded)
+            foreach (var item in _items)
+            {
+                _grid.RemoveItem(item);
+            }
+
+            _items.Clear();
+
+            GameEventBus.Publish<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(this);
+        }
+
+
+        private class InventoryChangedEvent : IInventoryCore.IInventoryChangedEvent
+        {
+            public IInventoryCore RefInventory { get; private set; }
+            public IRuntimeStorable Item { get; private set; }
+            public bool IsAdded { get; private set; }
+
+            public void Setup(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded)
             {
                 RefInventory = refInventory;
                 Item = item;

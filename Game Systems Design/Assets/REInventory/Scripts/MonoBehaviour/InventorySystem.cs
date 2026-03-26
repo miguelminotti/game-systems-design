@@ -1,3 +1,4 @@
+using MMStdLib.Utils;
 using REInventory.UI;
 using UnityEngine;
 
@@ -20,7 +21,13 @@ namespace REInventory
         {
             _inventoryCore = new InventoryCore();
             _inventoryCore.Initialize(gridWidth, gridHeight);
+            ServiceLocator.RegisterService(InventoryCore);
             uIInventoryCore.OpenInventory();
+        }
+
+        private void OnDestroy()
+        {
+            ServiceLocator.UnregisterService<IInventoryCore>();
         }
     }
 }

@@ -28,7 +28,7 @@ A simple grid inventory inspired on Resident Evil inventory mechanic, with drag 
 - Fully based on interfaces so it can be easily extended and modified
 - Communicates to UI using the **Event Bus**
 - Pure C# classes so it can be easily tested
-- Coded within 2 hours to improve fast prototyping and production skills
+- Coded within 3 hours to improve fast prototyping and production skills
 ---
 # Architecture Philosophy
 I design systems with a few core principles:

@@ -23,7 +23,6 @@ namespace REInventory.UI
         private IInventoryCore _bindedInventory;
         private UIInventoryItemView[] _itemViews;
         private UIInventoryGridSlotView[] _gridSlots;
-        private UIInventoryItemView _currentDraggingItemView;
 
         public void Initialize()
         {
@@ -33,28 +32,31 @@ namespace REInventory.UI
             foreach (var gridSlot in _gridSlots)
             {
                 gridSlot.OnPointerClicked += OnGridSlotClicked;
-                gridSlot.OnPointerExited += OnGridSlotPointerEntered;
+                gridSlot.OnPointerExited += OnGridSlotPointerEnteredHandler;
             }
 
             foreach (var itemView in _itemViews)
             {
-                itemView.OnPointerClicked += OnItemViewPointerClicked;
+                itemView.OnPointerClicked += OnItemViewPointerClickedHandler;
                 itemView.SetBindedCanvas(_parentCanvas);
             }
 
             _tempDraggingItemView.SetBindedCanvas(_parentCanvas);
+            _tempDraggingItemView.gameObject.SetActive(false);
         }
 
         private void OnEnable()
         {
-            GameEventBus.Subscribe<IInventoryChangedEvent>(OnInventoryChangedHandler);
-            GameEventBus.Subscribe<IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
+            GameEventBus.Subscribe<IInventoryCore.IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Subscribe<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
+            GameEventBus.Subscribe<IRuntimeStorable.IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
         private void OnDisable()
         {
-            GameEventBus.Unsubscribe<IInventoryChangedEvent>(OnInventoryChangedHandler);
-            GameEventBus.Unsubscribe<IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
+            GameEventBus.Unsubscribe<IInventoryCore.IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Unsubscribe<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
+            GameEventBus.Unsubscribe<IRuntimeStorable.IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
         public void BindInventory(IInventoryCore inventory)
@@ -84,7 +86,7 @@ namespace REInventory.UI
             }
         }
 
-        public void SetState(GridInteractionState newState)
+        private void SetState(GridInteractionState newState)
         {
             _currentInteractionState = newState;
         }
@@ -96,8 +98,9 @@ namespace REInventory.UI
             if (TryPlaceItemOnGridSlot(gridSlotView))
             {
                 SetState(GridInteractionState.Idle);
-                _currentDraggingItemView.EndDragging();
-                _currentDraggingItemView = null;
+                _tempDraggingItemView.EndDragging();
+                _tempDraggingItemView.gameObject.SetActive(false);
+
             }
         }
 
@@ -105,7 +108,7 @@ namespace REInventory.UI
         {
             if (gridSlotView == null || _bindedInventory == null) return false;
 
-            if (_bindedInventory.AddItemAtPosition(_currentDraggingItemView.BindedItem, gridSlotView.XPosition, gridSlotView.YPosition)) {
+            if (_bindedInventory.AddItemAtPosition(_tempDraggingItemView.BindedItem, gridSlotView.XPosition, gridSlotView.YPosition)) {
                 Debug.Log($"Item placed at: {gridSlotView.XPosition},{gridSlotView.YPosition}");
                 return true;
             }
@@ -114,30 +117,38 @@ namespace REInventory.UI
             return false;
         }
 
-        private void OnGridSlotPointerEntered(UIInventoryGridSlotView gridSlotView)
+        private void OnGridSlotPointerEnteredHandler(UIInventoryGridSlotView gridSlotView)
         {
             if (_currentInteractionState != GridInteractionState.ItemDragging) return;
 
             // Move the item to the position
         }
 
-        private void OnItemViewPointerClicked(UIInventoryItemView itemView)
+        private void OnItemViewPointerClickedHandler(UIInventoryItemView itemView)
         {
+            if (_currentInteractionState != GridInteractionState.Idle) return;
             _inventoryItemOptionsView.RefreshOptions(itemView.BindedItem.Options);
             _inventoryItemOptionsView.OpenOptions();
         }
 
-        private void OnInventoryChangedHandler(IInventoryChangedEvent eventData)
+        private void OnInventoryChangedHandler(IInventoryCore.IInventoryChangedEvent eventData)
         {
             if (eventData.RefInventory != _bindedInventory) return;
             DrawItems();
         }
 
-        private void OnMoveInventoryItemHandler(IMoveInventoryItemEvent eventData)
+        private void OnInventoryClearedHandler(IInventoryCore refInventory)
+        {
+            if (refInventory != _bindedInventory) return;
+            DrawItems();
+        }
+
+        private void OnMoveInventoryItemHandler(IRuntimeStorable.IMoveInventoryItemEvent eventData)
         {
             if (eventData.RefInventory != _bindedInventory || eventData.Item == null) return;
 
             SetState(GridInteractionState.ItemDragging);
+            _tempDraggingItemView.gameObject.SetActive(true);
             _tempDraggingItemView.SetBindedItem(eventData.Item);
             _tempDraggingItemView.StartDragging();
         }
