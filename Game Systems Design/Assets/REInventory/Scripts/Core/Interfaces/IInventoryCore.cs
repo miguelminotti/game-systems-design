@@ -14,17 +14,5 @@ namespace REInventory.Core
         bool TryRemoveItem(IRuntimeStorable item);
         bool TryRotateItem(IRuntimeStorable item);
         void Clear();
-
-        interface IInventoryChangedEvent
-        {
-            IInventoryCore RefInventory { get; }
-            IRuntimeStorable Item { get; }
-            bool IsAdded { get; }
-        }
-
-        interface IInventoryClearedEvent
-        {
-            IInventoryCore RefInventory { get; }
-        }
     }
 }

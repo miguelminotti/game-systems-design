@@ -47,15 +47,15 @@ namespace REInventory.Unity.UI
 
         private void OnEnable()
         {
-            GameEventBus.Subscribe<IInventoryCore.IInventoryChangedEvent>(OnInventoryChangedHandler);
-            GameEventBus.Subscribe<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
+            GameEventBus.Subscribe<InventoryEvents.IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Subscribe<InventoryEvents.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
             GameEventBus.Subscribe<IRuntimeStorable.IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
         private void OnDisable()
         {
-            GameEventBus.Unsubscribe<IInventoryCore.IInventoryChangedEvent>(OnInventoryChangedHandler);
-            GameEventBus.Unsubscribe<IInventoryCore.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
+            GameEventBus.Unsubscribe<InventoryEvents.IInventoryChangedEvent>(OnInventoryChangedHandler);
+            GameEventBus.Unsubscribe<InventoryEvents.IInventoryClearedEvent, IInventoryCore>(OnInventoryClearedHandler);
             GameEventBus.Unsubscribe<IRuntimeStorable.IMoveInventoryItemEvent>(OnMoveInventoryItemHandler);
         }
 
@@ -131,7 +131,7 @@ namespace REInventory.Unity.UI
             _inventoryItemOptionsView.OpenOptions();
         }
 
-        private void OnInventoryChangedHandler(IInventoryCore.IInventoryChangedEvent eventData)
+        private void OnInventoryChangedHandler(InventoryEvents.IInventoryChangedEvent eventData)
         {
             if (eventData.RefInventory != _bindedInventory) return;
             DrawItems();
