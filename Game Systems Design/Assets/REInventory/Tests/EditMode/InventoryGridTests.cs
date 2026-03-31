@@ -8,15 +8,12 @@ namespace REInventory.Tests
         [Test]
         public void PlaceItem_ValidPosition_ShouldSucceed()
         {
-            // Arrange
             var grid = new InventoryGrid(5, 5);
             var item = new TestItem(2, 2);
             var position = new GridPosition(0, 0);
 
-            // Act
             var result = grid.PlaceItem(item, position);
 
-            // Assert
             Assert.AreEqual(IInventoryGrid.PlaceItemResult.Succeeded, result);
         }
 
