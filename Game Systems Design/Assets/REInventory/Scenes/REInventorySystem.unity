@@ -1824,9 +1824,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91da23987a4f6c84e8032d98bb95f248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::REInventory.InventorySystem
-  uIInventoryCore: {fileID: 2008427270}
-  gridWidth: 6
-  gridHeight: 5
+  _inventoryData: {fileID: 11400000, guid: 6a585ec69d316d74ba2d21f125fd1701, type: 2}
+  _uIInventoryCore: {fileID: 2008427270}
 --- !u!4 &532804822
 Transform:
   m_ObjectHideFlags: 0
@@ -7476,7 +7475,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

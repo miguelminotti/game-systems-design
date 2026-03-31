@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/REInventory/UI%20Toolkit/Editor/InventoryCustomDebug/InventoryDebugCustomEditor.uss?fileID=7433441132597879392&amp;guid=011bce8bacffae64b88b6f4a5a859aa3&amp;type=3#InventoryDebugCustomEditor"/>
+    <ui:Label text="Inventory Debug" name="Label" class="custom-label" style="height: auto; margin-bottom: 24px; -unity-text-align: upper-center;"/>
+    <uie:ObjectField label="Item"/>
+    <ui:IntegerField label="X Position" value="42" name="XPosition"/>
+    <ui:IntegerField label="Y Position" value="42" name="YPosition"/>
+    <ui:Button text="Place Item" name="PlaceItemButton"/>
+</ui:UXML>

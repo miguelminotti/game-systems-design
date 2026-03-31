@@ -1,30 +1,22 @@
 using System;
 
-namespace REInventory
+namespace REInventory.Core
 {
-    public interface IInventoryGridSlot
-    {
-        int X { get; }
-        int Y { get; }
-        IRuntimeStorable StoredItem { get; }
-        event Action<IRuntimeStorable> OnItemStored;
-        void StoreItem(IRuntimeStorable item);
-        void RemoveItemStored();
-        bool IsOccupied();
-    }
-
     public class InventoryGridSlot : IInventoryGridSlot
     {
-        public int X { get; }
-        public int Y { get; }
+        public GridPosition GridPosition { get; }
         public IRuntimeStorable StoredItem { get; private set; }
 
         public event Action<IRuntimeStorable> OnItemStored;
 
+        public InventoryGridSlot(GridPosition gridPosition)
+        {
+            GridPosition = gridPosition;
+        }
+
         public InventoryGridSlot(int x, int y)
         {
-            X = x;
-            Y = y;
+            GridPosition = new GridPosition(x, y);
         }
 
         public void StoreItem(IRuntimeStorable item)

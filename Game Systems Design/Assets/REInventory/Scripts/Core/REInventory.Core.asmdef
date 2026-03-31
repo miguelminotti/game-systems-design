@@ -1,0 +1,16 @@
+{
+    "name": "REInventory.Core",
+    "rootNamespace": "",
+    "references": [
+        "MMStdLib.Utils"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

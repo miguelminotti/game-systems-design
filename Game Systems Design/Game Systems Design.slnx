@@ -1,4 +1,8 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="REInventory.Unity.csproj" />
+  <Project Path="MMStdLib.Utils.csproj" />
+  <Project Path="REInventory.Core.csproj" />
+  <Project Path="REInventory.Tests.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
 </Solution>

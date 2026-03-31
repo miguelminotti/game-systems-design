@@ -1,34 +1,8 @@
 using MMStdLib.Utils;
 using System.Collections.Generic;
 
-namespace REInventory
+namespace REInventory.Core
 {
-    public interface IInventoryCore
-    {
-        IReadOnlyList<IRuntimeStorable> Items { get; }
-        int MaxCapacity { get; }
-        int Width { get; }
-        int Height { get; }
-        void Initialize(int width, int height);
-        bool AddItem(IRuntimeStorable item);
-        bool AddItemAtPosition(IRuntimeStorable item, int x, int y);
-        bool RemoveItem(IRuntimeStorable item);
-        void Clear();
-
-        interface IInventoryChangedEvent
-        {
-            IInventoryCore RefInventory { get; }
-            IRuntimeStorable Item { get; }
-            bool IsAdded { get; }
-            void Setup(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded);
-        }
-
-        interface IInventoryClearedEvent
-        {
-            IInventoryCore RefInventory { get; }
-        }
-    }
-
     /// <summary>
     /// Core class for inventory management. Handles item storage, placement, and removal, as well as publishing events when the inventory changes.
     /// </summary>
@@ -41,48 +15,47 @@ namespace REInventory
 
         private readonly List<IRuntimeStorable> _items = new List<IRuntimeStorable>();
         private IInventoryGrid _grid;
-        private IInventoryCore.IInventoryChangedEvent _inventoryChangedEvent;
 
-        public void Initialize(int width, int height)
+        public void Initialize(IInventoryData data)
         {
-            _grid = new InventoryGrid(width, height);
-            _inventoryChangedEvent = new InventoryChangedEvent();
+            _grid = new InventoryGrid(data.Width, data.Height);
         }
 
-        public bool AddItem(IRuntimeStorable item)
+        public bool TryAddItem(IRuntimeStorable item)
         {
-            if (_grid.PlaceItemOnAvailableSpace(item))
+            if (_grid.TryPlaceItemOnAvailableSpace(item))
             {
                 item.BindToInventory(this);
                 _items.Add(item);
-                _inventoryChangedEvent.Setup(this, item, true);
-                GameEventBus.Publish(_inventoryChangedEvent);
+                IInventoryCore.IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, true);
+                GameEventBus.Publish(inventoryChangedEvent);
                 return true;
             }
             return false;
         }
 
-        public bool AddItemAtPosition(IRuntimeStorable item, int x, int y)
+        public IInventoryGrid.PlaceItemResult AddItemAtPosition(IRuntimeStorable item, GridPosition position)
         {
-            if (_grid.PlaceItem(item, x, y))
+            IInventoryGrid.PlaceItemResult placeItemResult = _grid.PlaceItem(item, position);
+            if (placeItemResult == IInventoryGrid.PlaceItemResult.Succeeded)
             {
                 item.BindToInventory(this);
                 _items.Add(item);
-                _inventoryChangedEvent.Setup(this, item, true);
-                GameEventBus.Publish(_inventoryChangedEvent);
-                return true;
+                IInventoryCore.IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, true);
+                GameEventBus.Publish(inventoryChangedEvent);
+                return placeItemResult;
             }
-            return false;
+            return placeItemResult;
         }
 
-        public bool RemoveItem(IRuntimeStorable item)
+        public bool TryRemoveItem(IRuntimeStorable item)
         {
-            if (_items.Remove(item))
+            if (_grid.TryRemoveItem(item))
             {
-                if (_grid.RemoveItem(item))
+                if (_items.Remove(item))
                 {
-                    _inventoryChangedEvent.Setup(this, item, false);
-                    GameEventBus.Publish(_inventoryChangedEvent);
+                    IInventoryCore.IInventoryChangedEvent inventoryChangedEvent = new InventoryChangedEvent(this, item, true);
+                    GameEventBus.Publish(inventoryChangedEvent);
                     return true;
                 }
             }
@@ -90,11 +63,16 @@ namespace REInventory
             return false;
         }
 
+        public bool TryRotateItem(IRuntimeStorable item)
+        {
+            return _grid.TryRotateItem(item);
+        }
+
         public void Clear()
         {
             foreach (var item in _items)
             {
-                _grid.RemoveItem(item);
+                _grid.TryRemoveItem(item);
             }
 
             _items.Clear();
@@ -104,11 +82,11 @@ namespace REInventory
 
         private class InventoryChangedEvent : IInventoryCore.IInventoryChangedEvent
         {
-            public IInventoryCore RefInventory { get; private set; }
-            public IRuntimeStorable Item { get; private set; }
-            public bool IsAdded { get; private set; }
+            public IInventoryCore RefInventory { get; }
+            public IRuntimeStorable Item { get; }
+            public bool IsAdded { get; }
 
-            public void Setup(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded)
+            public InventoryChangedEvent(IInventoryCore refInventory, IRuntimeStorable item, bool isAdded)
             {
                 RefInventory = refInventory;
                 Item = item;
