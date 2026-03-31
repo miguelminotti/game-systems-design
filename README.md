@@ -28,7 +28,16 @@ A simple grid inventory inspired on Resident Evil inventory mechanic, with drag 
 - Fully based on interfaces so it can be easily extended and modified
 - Communicates to UI using the **Event Bus**
 - Pure C# classes so it can be easily tested
-- Coded within 3 hours to improve fast prototyping and production skills
+## Service Locator – Global Access to Core Services
+A lightweight service locator that provides centralized access to shared systems across the application.
+
+👉 **Start here:** `Game Systems Design/Assets/Scripts/Utils/ServiceLocator.cs`
+
+- Generic and type-safe service registration and retrieval
+- Eliminates the need for hard references or manual dependency passing
+- Simple lifecycle management (register, unregister, clear)
+- Useful for global systems such as Audio, Save, Input, or Game State
+- Designed for fast iteration and prototyping
 ---
 # Architecture Philosophy
 I design systems with a few core principles:
