@@ -22,7 +22,6 @@ High-level API responsible for:
 
 👉 Acts as a **facade** over lower-level systems.
 
----
 ### InventoryGrid
 
 Handles:
@@ -32,7 +31,6 @@ Handles:
 
 👉 Responsible for **where items can be placed**, not _what happens when they are_
 
----
 ### InventoryGridSlot
 
 Represents:
@@ -42,7 +40,6 @@ Represents:
 
 👉 Keeps grid state consistent
 
----
 ### GridPosition
 
 Lightweight value struct used for:
@@ -50,7 +47,6 @@ Lightweight value struct used for:
 - Addressing positions in the grid
 - Performing relative movement
 
----
 ### InventoryEvents
 
 Defines:
@@ -81,7 +77,6 @@ ApplyChanges ---> PublishEvents
 - Grid handles spatial logic
 - Slots handle storage
 
----
 ### ✅ Event-Driven Communication
 
 All changes publish events through the Event Bus:
@@ -89,7 +84,6 @@ All changes publish events through the Event Bus:
 - No direct UI dependencies
 - Systems remain loosely coupled
 
----
 ### ✅ Interface-Based Design
 
 All major components use interfaces:
@@ -97,7 +91,6 @@ All major components use interfaces:
 - Enables easy extension
 - Supports mocking for testing
 
----
 ### ✅ Pure C# Core
 
 No Unity dependencies:
@@ -125,7 +118,6 @@ Operations return results instead of directly mutating state:
 - Supports undo/redo systems
 - Prepares for multiplayer validation
 
----
 ### 🔹 Future Extensions
 
 - Non-rectangular items
@@ -135,6 +127,36 @@ Operations return results instead of directly mutating state:
 - Inventory persistence
 
 ---
+## 🛠️ Debug Tools (Editor Integration)
+
+A custom debug editor window was created to interact with the inventory system at runtime.
+
+### ✨ Features
+
+- Selects the active inventory instance via Service Locator
+- Displays current inventory state
+- Allows adding items defined as ScriptableObjects
+- Supports manual placement and quick testing of grid behavior
+- Enables rapid iteration without relying on gameplay flow
+
+### 🧠 Purpose
+
+This tool was designed to:
+
+- Speed up development and testing of inventory behaviors
+- Validate grid logic and edge cases quickly
+- Reduce dependency on in-game UI during development
+- Provide a controlled environment for debugging
+
+### 🔗 Integration
+
+The tool retrieves the active inventory instance through the Service Locator:
+
+``` csharp
+var inventory = ServiceLocator.GetService<IInventoryCore>();
+```
+
+---
 ## ⚠️ Trade-offs
 
 ### Service Locator usage
@@ -142,7 +164,6 @@ Operations return results instead of directly mutating state:
 - Simplifies access to global systems
 - Can introduce hidden dependencies if overused
 
----
 ### Grid mutation (current vs future)
 
 - Currently handles slot mutation internally
