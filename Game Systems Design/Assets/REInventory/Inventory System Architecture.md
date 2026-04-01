@@ -156,6 +156,18 @@ var inventory = ServiceLocator.GetService<IInventoryCore>();
 ```
 
 ---
+## 🎮 Runtime + Tooling Integration
+
+![[InGameImage.png]]
+
+The inventory system is fully integrated with both runtime UI and custom editor tools.
+
+This allows:
+- Real-time interaction through UI
+- Direct manipulation via debug tools
+- Fast iteration and testing workflows
+
+---
 ## ⚠️ Trade-offs
 
 ### Service Locator usage
