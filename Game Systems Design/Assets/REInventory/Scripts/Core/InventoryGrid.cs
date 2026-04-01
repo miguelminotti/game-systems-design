@@ -1,7 +1,3 @@
-// TODO: Fix rotation operation
-
-using NUnit;
-using System.Collections;
 using static REInventory.Core.IInventoryGrid;
 
 namespace REInventory.Core
