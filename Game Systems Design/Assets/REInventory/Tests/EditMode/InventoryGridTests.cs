@@ -97,7 +97,7 @@ namespace REInventory.Tests
 
             var newItem = new TestItem(1, 1);
 
-            bool success = grid.TryPlaceItemOnAvailableSpace(newItem);
+            bool success = grid.TryPlaceItemOnAvailableSpace(newItem, out _);
 
             Assert.IsTrue(success);
         }

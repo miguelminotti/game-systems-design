@@ -14,15 +14,15 @@ namespace REInventory.Core
             FailedOccupied
         }
         PlaceItemResult PlaceItem(IRuntimeStorable item, GridPosition gridPosition);
-        bool TryPlaceItemOnAvailableSpace(IRuntimeStorable item);
+        bool TryPlaceItemOnAvailableSpace(IRuntimeStorable item, out GridPosition placedPosition);
         bool TryRemoveItem(IRuntimeStorable item);
-        enum IsPlacebleAtResult
+        enum IsPlaceableAtResult
         {
             Placeble,
             OutOfBounds,
             Occupied
         }
-        IsPlacebleAtResult IsPlaceableAt(GridPosition gridPosition, int itemWidth, int itemHeight);
+        IsPlaceableAtResult IsPlaceableAt(GridPosition gridPosition, int itemWidth, int itemHeight);
         bool TryRotateItem(IRuntimeStorable item);
     }
 }

@@ -1,5 +1,6 @@
 using MMStdLib.Utils;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 namespace REInventory.Core
 {
@@ -39,8 +40,9 @@ namespace REInventory.Core
         /// <inheritdoc/>
         public bool TryAddItem(IRuntimeStorable item)
         {
-            if (_grid.TryPlaceItemOnAvailableSpace(item))
+            if (_grid.TryPlaceItemOnAvailableSpace(item, out GridPosition placedPosition))
             {
+                item.SetPosition(placedPosition);
                 item.BindToInventory(this);
                 _items.Add(item);
 
@@ -60,6 +62,7 @@ namespace REInventory.Core
 
             if (placeItemResult == IInventoryGrid.PlaceItemResult.Succeeded)
             {
+                item.SetPosition(position);
                 item.BindToInventory(this);
                 _items.Add(item);
 
@@ -114,7 +117,8 @@ namespace REInventory.Core
 
             _items.Clear();
 
-            GameEventBus.Publish<InventoryEvents.IInventoryClearedEvent, IInventoryCore>(this);
+            InventoryEvents.IInventoryClearedEvent inventoryClearedEvent = new InventoryClearedEvent(this);
+            GameEventBus.Publish(inventoryClearedEvent);
         }
 
         /// <summary>
@@ -139,6 +143,19 @@ namespace REInventory.Core
                 RefInventory = refInventory;
                 Item = item;
                 ChangeType = changeType;
+            }
+        }
+
+        /// <summary>
+        /// Internal implementation of the inventory cleared event.
+        /// </summary>
+        private class InventoryClearedEvent : InventoryEvents.IInventoryClearedEvent
+        {
+            /// <inheritdoc/>
+            public IInventoryCore RefInventory { get; }
+            public InventoryClearedEvent(IInventoryCore refInventory)
+            {
+                RefInventory = refInventory;
             }
         }
     }

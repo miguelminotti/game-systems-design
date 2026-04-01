@@ -1,3 +1,6 @@
+// TODO: Add a full support of result structs on each void
+// TODO: Separate checking and applying operations
+
 namespace REInventory.Core
 {
     public class InventoryGrid : IInventoryGrid
@@ -40,33 +43,33 @@ namespace REInventory.Core
         {
             int itemWidth = item.Width;
             int itemHeight = item.Height;
-            IInventoryGrid.IsPlacebleAtResult isPlacebleAt = IsPlaceableAt(gridPosition, itemWidth, itemHeight);
+            IInventoryGrid.IsPlaceableAtResult isPlacebleAt = IsPlaceableAt(gridPosition, itemWidth, itemHeight);
             switch (isPlacebleAt)
             {
-                case IInventoryGrid.IsPlacebleAtResult.Placeble:
-                    item.SetPosition(gridPosition);
+                case IInventoryGrid.IsPlaceableAtResult.Placeble:
                     FillSlotsForItem(item, gridPosition);
                     return IInventoryGrid.PlaceItemResult.Succeeded;
-                case IInventoryGrid.IsPlacebleAtResult.OutOfBounds:
+                case IInventoryGrid.IsPlaceableAtResult.OutOfBounds:
                     return IInventoryGrid.PlaceItemResult.FailedOutOfBounds;
-                case IInventoryGrid.IsPlacebleAtResult.Occupied:
+                case IInventoryGrid.IsPlaceableAtResult.Occupied:
                     return IInventoryGrid.PlaceItemResult.FailedOccupied;
             }
             return IInventoryGrid.PlaceItemResult.FailedOutOfBounds;
         }
 
-        public bool TryPlaceItemOnAvailableSpace(IRuntimeStorable item)
+        public bool TryPlaceItemOnAvailableSpace(IRuntimeStorable item, out GridPosition placedPosition)
         {
+            placedPosition = default;
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
                     GridPosition position = new GridPosition(x, y);
-                    IInventoryGrid.IsPlacebleAtResult isPlacebleAt = IsPlaceableAt(position, item.Width, item.Height);
+                    IInventoryGrid.IsPlaceableAtResult isPlacebleAt = IsPlaceableAt(position, item.Width, item.Height);
 
-                    if (isPlacebleAt == IInventoryGrid.IsPlacebleAtResult.Placeble)
+                    if (isPlacebleAt == IInventoryGrid.IsPlaceableAtResult.Placeble)
                     {
-                        item.SetPosition(position);
+                        placedPosition = position;
                         FillSlotsForItem(item, position);
                         return true;
                     }
@@ -96,7 +99,7 @@ namespace REInventory.Core
             return itemFound;
         }
 
-        public IInventoryGrid.IsPlacebleAtResult IsPlaceableAt(GridPosition gridPosition, int itemWidth, int itemHeight)
+        public IInventoryGrid.IsPlaceableAtResult IsPlaceableAt(GridPosition gridPosition, int itemWidth, int itemHeight)
         {
             for (int i = 0; i < itemWidth; i++)
             {
@@ -105,15 +108,15 @@ namespace REInventory.Core
                     GridPosition checkPosition = gridPosition.Move(i, j);
                     if (checkPosition.X >= Width || checkPosition.Y >= Height)
                     {
-                        return IInventoryGrid.IsPlacebleAtResult.OutOfBounds;
+                        return IInventoryGrid.IsPlaceableAtResult.OutOfBounds;
                     } else if (TryGetSlot(checkPosition, out IInventoryGridSlot gridSlot) && gridSlot.IsOccupied())
                     {
-                        return IInventoryGrid.IsPlacebleAtResult.Occupied;
+                        return IInventoryGrid.IsPlaceableAtResult.Occupied;
                     }
                 }
             }
 
-            return IInventoryGrid.IsPlacebleAtResult.Placeble; // Placeable if all slots are within bounds and unoccupied
+            return IInventoryGrid.IsPlaceableAtResult.Placeble; // Placeable if all slots are within bounds and unoccupied
         }
 
         public bool IsOutOfBounds(GridPosition gridPosition)
@@ -123,8 +126,24 @@ namespace REInventory.Core
 
         public bool TryRotateItem(IRuntimeStorable item)
         {
-            bool canRotate = true;
+            if (CanRotateItem(item))
+            {
+                if (TryRemoveItem(item))
+                {
+                    FillSlotsForItem(item, item.Height, item.Width, item.StartingPosition);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
+            return false;
+        }
+
+        private bool CanRotateItem(IRuntimeStorable item)
+        {
             for (int x = item.StartingPosition.X; x <= item.StartingPosition.X + item.Height - 1; x++)
             {
                 for (int y = item.StartingPosition.Y; y <= item.StartingPosition.Y + item.Width - 1; y++)
@@ -132,25 +151,18 @@ namespace REInventory.Core
                     GridPosition position = new GridPosition(x, y);
                     if (TryGetSlot(position, out IInventoryGridSlot gridSlot))
                     {
-                        if ((gridSlot.StoredItem != item && gridSlot.IsOccupied()) || IsOutOfBounds(position))
+                        if (gridSlot.StoredItem != item && gridSlot.IsOccupied())
                         {
-                            canRotate = false;
+                            return false;
                         }
-                    } else
+                    }
+                    else
                     {
-                        canRotate = false;
+                        return false;
                     }
                 }
             }
-
-            if (TryRemoveItem(item))
-            {
-                FillSlotsForItem(item, item.Height, item.Width, item.StartingPosition);
-            } else
-            {
-                canRotate = false;
-            }
-            return canRotate;
+            return true;
         }
 
         private void FillSlotsForItem(IRuntimeStorable item, GridPosition gridPosition)

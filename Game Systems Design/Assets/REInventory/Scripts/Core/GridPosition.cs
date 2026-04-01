@@ -1,9 +1,9 @@
 namespace REInventory.Core
 {
-    public struct GridPosition
+    public readonly struct GridPosition
     {
-        public int X;
-        public int Y;
+        public int X { get; }
+        public int Y { get; }
 
         public GridPosition(int x, int y)
         {
