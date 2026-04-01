@@ -134,7 +134,6 @@ A custom debug editor window was created to interact with the inventory system a
 ### ✨ Features
 
 - Selects the active inventory instance via Service Locator
-- Displays current inventory state
 - Allows adding items defined as ScriptableObjects
 - Supports manual placement and quick testing of grid behavior
 - Enables rapid iteration without relying on gameplay flow
