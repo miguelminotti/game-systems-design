@@ -37,32 +37,36 @@ namespace REInventory.Core
         }
 
         /// <inheritdoc/>
-        public bool TryAddItem(IRuntimeStorable item)
+        public IInventoryGrid.PlacementResult TryAddItemOnAvailableSpace(IRuntimeStorable item)
         {
-            if (_grid.TryPlaceItemOnAvailableSpace(item, out GridPosition placedPosition))
+            var result = _grid.CheckPlaceItemOnAvailableSpace(item);
+
+            if (result.Success)
             {
-                item.SetPosition(placedPosition);
+                item.SetPosition(result.Origin);
                 item.BindToInventory(this);
+                _grid.ApplyPlacement(item, result);
                 _items.Add(item);
 
                 InventoryEvents.IInventoryChangedEvent inventoryChangedEvent =
                     new InventoryChangedEvent(this, item, InventoryEvents.InventoryChangeType.Added);
 
                 GameEventBus.Publish(inventoryChangedEvent);
-                return true;
             }
-            return false;
+
+            return result;
         }
 
         /// <inheritdoc/>
-        public IInventoryGrid.PlaceItemResult AddItemAtPosition(IRuntimeStorable item, GridPosition position)
+        public IInventoryGrid.PlacementResult AddItemAtPosition(IRuntimeStorable item, GridPosition position)
         {
-            IInventoryGrid.PlaceItemResult placeItemResult = _grid.PlaceItem(item, position);
+            var result = _grid.CheckPlaceItem(item, position);
 
-            if (placeItemResult == IInventoryGrid.PlaceItemResult.Succeeded)
+            if (result.Success)
             {
-                item.SetPosition(position);
+                item.SetPosition(result.Origin);
                 item.BindToInventory(this);
+                _grid.ApplyPlacement(item, result);
                 _items.Add(item);
 
                 InventoryEvents.IInventoryChangedEvent inventoryChangedEvent =
@@ -71,7 +75,7 @@ namespace REInventory.Core
                 GameEventBus.Publish(inventoryChangedEvent);
             }
 
-            return placeItemResult;
+            return result;
         }
 
         /// <inheritdoc/>
@@ -93,17 +97,23 @@ namespace REInventory.Core
         }
 
         /// <inheritdoc/>
-        public bool TryRotateItem(IRuntimeStorable item)
+        public IInventoryGrid.PlacementResult TryRotateItem(IRuntimeStorable item)
         {
-            if (_grid.TryRotateItem(item))
+            var result = _grid.CheckRotateItem(item);
+
+            if (result.Success)
             {
-                InventoryEvents.IInventoryChangedEvent inventoryChangedEvent =
+                if (_grid.TryRemoveItem(item))
+                {
+                    _grid.ApplyPlacement(item, result);
+                    InventoryEvents.IInventoryChangedEvent inventoryChangedEvent =
                     new InventoryChangedEvent(this, item, InventoryEvents.InventoryChangeType.Rotated);
 
-                GameEventBus.Publish(inventoryChangedEvent);
-                return true;
+                    GameEventBus.Publish(inventoryChangedEvent);
+                }
             }
-            return false;
+
+            return result;
         }
 
         /// <inheritdoc/>

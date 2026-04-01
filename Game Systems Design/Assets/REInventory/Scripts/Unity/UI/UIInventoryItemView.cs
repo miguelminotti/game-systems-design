@@ -62,7 +62,7 @@ namespace REInventory.Unity.UI
         public void SetBindedItem(IRuntimeStorable bindeddItem)
         {
             if (_bindedItem != null)
-                _bindedItem.OnRotationChanged -= OnBindedItemRotationChangedHandler;
+                _bindedItem.OnRotationChanged -= OnBindedItemRotationChangedHandler; // TODO: Change to game event bus
             _bindedItem = bindeddItem;
             _bindedItem.OnRotationChanged += OnBindedItemRotationChangedHandler;
             //_image.sprite = _bindedItem.BaseItem.Icon; TODO: Get from a database of icons based on id

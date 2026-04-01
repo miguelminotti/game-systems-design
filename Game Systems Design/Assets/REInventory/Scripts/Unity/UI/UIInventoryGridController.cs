@@ -108,12 +108,14 @@ namespace REInventory.Unity.UI
         {
             if (gridSlotView == null || _bindedInventory == null) return false;
 
-            if (_bindedInventory.AddItemAtPosition(_tempDraggingItemView.BindedItem, new GridPosition(gridSlotView.XPosition, gridSlotView.YPosition)) == IInventoryGrid.PlaceItemResult.Succeeded) {
+            var result = _bindedInventory.AddItemAtPosition(_tempDraggingItemView.BindedItem, new GridPosition(gridSlotView.XPosition, gridSlotView.YPosition));
+
+            if (result.Success) {
                 Debug.Log($"Item placed at: {gridSlotView.XPosition},{gridSlotView.YPosition}");
                 return true;
             }
 
-            Debug.Log("Cant place item");
+            Debug.Log($"Cant place item: {result.FailureReason}");
             return false;
         }
 

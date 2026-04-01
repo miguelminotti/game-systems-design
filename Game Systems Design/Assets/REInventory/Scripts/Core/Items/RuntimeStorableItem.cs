@@ -71,7 +71,9 @@ namespace REInventory.Core
 
         private void Rotate()
         {
-            if (_bindedInventory.TryRotateItem(this))
+            var result = _bindedInventory.TryRotateItem(this);
+
+            if (result.Success)
             {
                 if (CurrentRotation == IRuntimeStorable.Rotation.Landscape)
                 {

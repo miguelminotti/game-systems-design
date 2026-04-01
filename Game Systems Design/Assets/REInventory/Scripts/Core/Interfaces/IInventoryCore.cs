@@ -36,7 +36,7 @@ namespace REInventory.Core
         /// </summary>
         /// <param name="item">The item to be added.</param>
         /// <returns>
-        /// True if the item was successfully placed; otherwise, false if no suitable space was found.
+        /// A <see cref="IInventoryGrid.PlacementResult"/> indicating the result of the operation.
         /// </returns>
         /// <remarks>
         /// <para><b>On success:</b></para>
@@ -44,7 +44,7 @@ namespace REInventory.Core
         /// <para>- The item is stored internally</para>
         /// <para>- An <see cref="InventoryEvents.IInventoryChangedEvent"/> is published with type <c>Added</c></para>
         /// </remarks>
-        bool TryAddItem(IRuntimeStorable item);
+        IInventoryGrid.PlacementResult TryAddItemOnAvailableSpace(IRuntimeStorable item);
 
         /// <summary>
         /// Attempts to add an item at a specific grid position.
@@ -52,7 +52,7 @@ namespace REInventory.Core
         /// <param name="item">The item to be placed.</param>
         /// <param name="position">The target position in the grid.</param>
         /// <returns>
-        /// A <see cref="IInventoryGrid.PlaceItemResult"/> indicating the result of the operation.
+        /// A <see cref="IInventoryGrid.PlacementResult"/> indicating the result of the operation.
         /// </returns>
         /// <remarks>
         /// <para><b>On success:</b></para>
@@ -63,7 +63,7 @@ namespace REInventory.Core
         /// <para><b>On failure:</b></para>
         /// <para>- No changes are applied to the inventory</para>
         /// </remarks>
-        IInventoryGrid.PlaceItemResult AddItemAtPosition(IRuntimeStorable item, GridPosition position);
+        IInventoryGrid.PlacementResult AddItemAtPosition(IRuntimeStorable item, GridPosition position);
 
         /// <summary>
         /// Attempts to remove an item from the inventory.
@@ -95,7 +95,7 @@ namespace REInventory.Core
         /// <para>- The item orientation is updated in the grid</para>
         /// <para>- An <see cref="InventoryEvents.IInventoryChangedEvent"/> is published with type <c>Rotated</c></para>
         /// </remarks>
-        bool TryRotateItem(IRuntimeStorable item);
+        IInventoryGrid.PlacementResult TryRotateItem(IRuntimeStorable item);
 
         /// <summary>
         /// Removes all items from the inventory.

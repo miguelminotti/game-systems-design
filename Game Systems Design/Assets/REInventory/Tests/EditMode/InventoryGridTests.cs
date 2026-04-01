@@ -12,9 +12,9 @@ namespace REInventory.Tests
             var item = new TestItem(2, 2);
             var position = new GridPosition(0, 0);
 
-            var result = grid.PlaceItem(item, position);
+            var result = grid.CheckPlaceItem(item, position);
 
-            Assert.AreEqual(IInventoryGrid.PlaceItemResult.Succeeded, result);
+            Assert.IsTrue(result.Success);
         }
 
         [Test]
@@ -23,9 +23,9 @@ namespace REInventory.Tests
             var grid = new InventoryGrid(5, 5);
             var item = new TestItem(3, 3);
 
-            var result = grid.PlaceItem(item, new GridPosition(4, 4));
+            var result = grid.CheckPlaceItem(item, new GridPosition(4, 4));
 
-            Assert.AreEqual(IInventoryGrid.PlaceItemResult.FailedOutOfBounds, result);
+            Assert.AreEqual(IInventoryGrid.PlaceItemResultFailureReason.FailedOutOfBounds, result.FailureReason);
         }
 
         [Test]
@@ -36,11 +36,11 @@ namespace REInventory.Tests
             var item1 = new TestItem(2, 2);
             var item2 = new TestItem(2, 2);
 
-            grid.PlaceItem(item1, new GridPosition(0, 0));
+            grid.CheckPlaceItem(item1, new GridPosition(0, 0));
 
-            var result = grid.PlaceItem(item2, new GridPosition(0, 0));
+            var result = grid.CheckPlaceItem(item2, new GridPosition(0, 0));
 
-            Assert.AreEqual(IInventoryGrid.PlaceItemResult.FailedOccupied, result);
+            Assert.AreEqual(IInventoryGrid.PlaceItemResultFailureReason.FailedOccupied, result.FailureReason);
         }
 
         [Test]
@@ -49,14 +49,14 @@ namespace REInventory.Tests
             var grid = new InventoryGrid(5, 5);
             var item = new TestItem(2, 2);
 
-            grid.PlaceItem(item, new GridPosition(0, 0));
+            grid.CheckPlaceItem(item, new GridPosition(0, 0));
 
             bool removed = grid.TryRemoveItem(item);
 
             Assert.IsTrue(removed);
 
-            var result = grid.PlaceItem(new TestItem(2, 2), new GridPosition(0, 0));
-            Assert.AreEqual(IInventoryGrid.PlaceItemResult.Succeeded, result);
+            var result = grid.CheckPlaceItem(new TestItem(2, 2), new GridPosition(0, 0));
+            Assert.IsTrue(result.Success);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace REInventory.Tests
             var grid = new InventoryGrid(5, 5);
             var item = new TestItem(2, 2);
 
-            grid.PlaceItem(item, new GridPosition(1, 1));
+            grid.CheckPlaceItem(item, new GridPosition(1, 1));
 
             for (int x = 1; x <= 2; x++)
             {
@@ -93,13 +93,13 @@ namespace REInventory.Tests
         {
             var grid = new InventoryGrid(2, 2);
 
-            grid.PlaceItem(new TestItem(1, 1), new GridPosition(0, 0));
+            grid.CheckPlaceItem(new TestItem(1, 1), new GridPosition(0, 0));
 
             var newItem = new TestItem(1, 1);
 
-            bool success = grid.TryPlaceItemOnAvailableSpace(newItem, out _);
+            var result = grid.CheckPlaceItemOnAvailableSpace(newItem);
 
-            Assert.IsTrue(success);
+            Assert.IsTrue(result.Success);
         }
     }
 }

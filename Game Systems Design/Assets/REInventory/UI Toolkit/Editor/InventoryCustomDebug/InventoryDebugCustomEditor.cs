@@ -90,13 +90,15 @@ public class InventoryDebugCustomEditor : EditorWindow
         IStorable newItem = storable;
         IRuntimeStorable runtimeItem = newItem.GetRuntimeInstance();
 
-        if (inventory.AddItemAtPosition(runtimeItem, new GridPosition(x, y)) == IInventoryGrid.PlaceItemResult.Succeeded)
+        var result = inventory.AddItemAtPosition(runtimeItem, new GridPosition(x, y));
+
+        if (result.Success)
         {
             Debug.Log($"Item placed in inventory.");
         }
         else
         {
-            Debug.Log($"Failed to place item.");
+            Debug.Log($"Failed to place item: {result.FailureReason}.");
         }
     }
 }
