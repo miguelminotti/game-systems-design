@@ -25,13 +25,6 @@ namespace REInventory.Core
         int Height { get; }
 
         /// <summary>
-        /// Initializes the inventory using the provided data.
-        /// Must be called before performing any operations.
-        /// </summary>
-        /// <param name="data">Configuration data defining the inventory dimensions.</param>
-        void Initialize(IInventoryData data);
-
-        /// <summary>
         /// Attempts to add an item to the first available space in the inventory.
         /// </summary>
         /// <param name="item">The item to be added.</param>

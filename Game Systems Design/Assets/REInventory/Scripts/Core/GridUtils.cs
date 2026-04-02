@@ -1,6 +1,7 @@
 // TODO: Fix rotation operation
 
 using System.Collections.Generic;
+using System;
 
 namespace REInventory.Core
 {
@@ -13,6 +14,17 @@ namespace REInventory.Core
                 for (int y = 0; y < height; y++)
                 {
                     yield return origin.Move(x, y);
+                }
+            }
+        }
+
+        public static IEnumerable<GridPosition> GetRectGridSpace(GridPosition origin, GridPosition end)
+        {
+            for (int x = Math.Min(origin.X, end.X); x <= Math.Max(origin.X, end.X); x++)
+            {
+                for (int y = Math.Min(origin.Y, end.Y); y <= Math.Max(origin.Y, end.Y); y++)
+                {
+                    yield return new GridPosition(x, y);
                 }
             }
         }

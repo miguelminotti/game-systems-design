@@ -17,8 +17,7 @@ namespace REInventory.Unity
 
         private void Awake()
         {
-            _inventoryCore = new InventoryCore();
-            _inventoryCore.Initialize(_inventoryData);
+            _inventoryCore = new InventoryCore(_inventoryData);
             ServiceLocator.RegisterService(InventoryCore);
             _uIInventoryCore.OpenInventory();
         }

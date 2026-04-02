@@ -31,7 +31,7 @@ namespace REInventory.Core
         private IInventoryGrid _grid;
 
         /// <inheritdoc/>
-        public void Initialize(IInventoryData data)
+        public InventoryCore(IInventoryData data)
         {
             _grid = new InventoryGrid(data.Width, data.Height);
         }
@@ -81,7 +81,7 @@ namespace REInventory.Core
         /// <inheritdoc/>
         public bool TryRemoveItem(IRuntimeStorable item)
         {
-            if (_grid.TryRemoveItem(item))
+            if (_grid.TryRemoveItem(item)) // TODO: here, there are the possibility to have an inconsistency between the grid and the list, find a way to avoid it
             {
                 if (_items.Remove(item))
                 {
@@ -105,6 +105,7 @@ namespace REInventory.Core
             {
                 if (_grid.TryRemoveItem(item))
                 {
+                    item.SetPosition(result.Origin);
                     _grid.ApplyPlacement(item, result);
                     InventoryEvents.IInventoryChangedEvent inventoryChangedEvent =
                     new InventoryChangedEvent(this, item, InventoryEvents.InventoryChangeType.Rotated);
